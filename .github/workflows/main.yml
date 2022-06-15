@@ -1,0 +1,48 @@
+name: main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: 👷 Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v3
+      
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/gallium'
+          registry-url: 'https://npm.pkg.github.com'
+
+      - name: 🎁 NPM cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            **/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install npm dependencies
+        id: run-npm-i
+        run: npm ci --ignore-scripts
+        shell: bash
+
+      - name:  Version check
+        id: version-check
+        uses: EndBug/version-check@v2.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish
+        if: steps.version-check.outputs.changed == 'true'
+        id: run-publish
+        run: npm run build && npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
