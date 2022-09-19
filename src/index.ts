@@ -270,10 +270,9 @@ export class EloMatchResult {
           }
         }
 
-        const newRating = player.rating + eloDiff;
-        this.results.push(
-          new EloPlayerResult(player.identifier, Math.round(newRating))
-        );
+        const newRating =
+          player.rating + Math.sign(eloDiff) * Math.round(Math.abs(eloDiff));
+        this.results.push(new EloPlayerResult(player.identifier, newRating));
       }
     }
 
