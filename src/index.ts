@@ -29,7 +29,7 @@ export class Player {
     return 1 / (1 + Math.pow(10, (versusRating - this.rating) / 400));
   }
 
-  expectedScoreAgainst(other: Team | Player | number): number {
+  public expectedScoreAgainst(other: Team | Player | number): number {
     if (other instanceof Player) {
       return this.expectedScore(other.rating);
     } else if (other instanceof Team) {
@@ -117,7 +117,7 @@ export class Team {
     return 1 / (1 + Math.pow(10, (versusRating - this.averageRating()) / 400));
   }
 
-  expectedScoreAgainst(other: Team | Player | number): number {
+  public expectedScoreAgainst(other: Team | Player | number): number {
     if (other instanceof Player) {
       return this.expectedScore(other.rating);
     } else if (other instanceof Team) {

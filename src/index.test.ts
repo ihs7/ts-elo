@@ -1,4 +1,11 @@
-import { Duel, FreeForAll, Player, TeamMatch, CalculationStrategy } from ".";
+import {
+  Duel,
+  FreeForAll,
+  Team,
+  Player,
+  TeamMatch,
+  CalculationStrategy,
+} from ".";
 
 test("should expect equal players to draw", () => {
   const player1 = new Player("1", 1200);
@@ -16,6 +23,15 @@ test("should expect lower rated player to lose", () => {
   const player1 = new Player("1", 1199);
   const player2 = new Player("2", 1200);
   expect(player1.expectedScoreAgainst(player2)).toBeLessThan(0.5);
+});
+
+test("should expect lower rated team to lose", () => {
+  const team1 = new Team("1", 1);
+  team1.addPlayer(new Player("1", 1199));
+  const team2 = new Team("2", 2);
+  team2.addPlayer(new Player("2", 1200));
+
+  expect(team1.expectedScoreAgainst(team2)).toBeLessThan(0.5);
 });
 
 test("should calculate expectedScoreAgainst correctly", () => {
