@@ -18,6 +18,12 @@ test("should expect lower rated player to lose", () => {
   expect(player1.expectedScoreAgainst(player2)).toBeLessThan(0.5);
 });
 
+test("should calculate expectedScoreAgainst correctly", () => {
+  const player1 = new Player("1", 1460);
+  const player2 = new Player("2", 1130);
+  expect(player1.expectedScoreAgainst(player2)).toBe(0.8698499490743091);
+});
+
 test("should calculate Duel correctly", () => {
   const playerIdentifier1 = "1";
   const playerIdentifier2 = "2";
@@ -40,14 +46,10 @@ test("should calculate FreeForAll correctly", () => {
   const playerIdentifier3 = "3";
   const playerIdentifier4 = "4";
   const match = new FreeForAll();
-  const player1 = new Player(playerIdentifier1, 1000);
-  const player2 = new Player(playerIdentifier2, 1200);
-  const player3 = new Player(playerIdentifier3, 1300);
-  const player4 = new Player(playerIdentifier4, 1500);
-  match.addPlayer(player1, 1);
-  match.addPlayer(player2, 2);
-  match.addPlayer(player3, 3);
-  match.addPlayer(player4, 4);
+  match.addPlayer(new Player(playerIdentifier1, 1000), 1);
+  match.addPlayer(new Player(playerIdentifier2, 1200), 2);
+  match.addPlayer(new Player(playerIdentifier3, 1300), 3);
+  match.addPlayer(new Player(playerIdentifier4, 1500), 4);
   const results = match.calculate();
   expect(
     results.results.find((c) => c.identifier === playerIdentifier1).rating
