@@ -1,4 +1,4 @@
-import { Duel, FreeForAll, Player, TeamMatch } from ".";
+import { Duel, FreeForAll, Player, TeamMatch, CalculationStrategy } from ".";
 
 test("should expect equal players to draw", () => {
   const player1 = new Player("1", 1200);
@@ -33,10 +33,10 @@ test("should calculate Duel correctly", () => {
   match.addPlayer(new Player(playerIdentifier2, 1200), false);
   const results = match.calculate();
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier1).rating
+    results.results.find((c) => c.identifier === playerIdentifier1)?.rating
   ).toBe(1207);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier2).rating
+    results.results.find((c) => c.identifier === playerIdentifier2)?.rating
   ).toBe(1192);
 });
 
@@ -52,26 +52,28 @@ test("should calculate FreeForAll correctly", () => {
   match.addPlayer(new Player(playerIdentifier4, 1500), 4);
   const results = match.calculate();
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier1).rating
+    results.results.find((c) => c.identifier === playerIdentifier1)?.rating
   ).toBe(1038);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier2).rating
+    results.results.find((c) => c.identifier === playerIdentifier2)?.rating
   ).toBe(1211);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier3).rating
+    results.results.find((c) => c.identifier === playerIdentifier3)?.rating
   ).toBe(1289);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier4).rating
+    results.results.find((c) => c.identifier === playerIdentifier4)?.rating
   ).toBe(1462);
 });
 
-test("should calculate TeamMatch correctly", () => {
+test("should calculate TeamMatch correctly with TEAM_VS_TEAM strategy", () => {
   const playerIdentifier1 = "1";
   const playerIdentifier2 = "2";
   const playerIdentifier3 = "3";
   const playerIdentifier4 = "4";
 
-  const match = new TeamMatch();
+  const match = new TeamMatch({
+    calculationStrategy: CalculationStrategy.TEAM_VS_TEAM,
+  });
   const team1 = match.addTeam("1", 1);
   team1.addPlayer(new Player(playerIdentifier1, 1100));
   team1.addPlayer(new Player(playerIdentifier2, 1150));
@@ -81,15 +83,47 @@ test("should calculate TeamMatch correctly", () => {
 
   const results = match.calculate();
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier1).rating
-  ).toBe(1117);
+    results.results.find((c) => c.identifier === playerIdentifier1)?.rating
+  ).toBe(1108);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier2).rating
-  ).toBe(1165);
+    results.results.find((c) => c.identifier === playerIdentifier2)?.rating
+  ).toBe(1158);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier3).rating
-  ).toBe(1278);
+    results.results.find((c) => c.identifier === playerIdentifier3)?.rating
+  ).toBe(1292);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier4).rating
-  ).toBe(990);
+    results.results.find((c) => c.identifier === playerIdentifier4)?.rating
+  ).toBe(992);
+});
+
+test("should calculate TeamMatch correctly with INDIVIDUAL_VS_TEAM strategy", () => {
+  const playerIdentifier1 = "1";
+  const playerIdentifier2 = "2";
+  const playerIdentifier3 = "3";
+  const playerIdentifier4 = "4";
+
+  const match = new TeamMatch({
+    calculationStrategy: CalculationStrategy.INDIVIDUAL_VS_TEAM,
+  });
+  const team1 = match.addTeam("1", 1);
+  team1.addPlayer(new Player(playerIdentifier1, 1100));
+  team1.addPlayer(new Player(playerIdentifier2, 1150));
+  const team2 = match.addTeam("2", 2);
+  team2.addPlayer(new Player(playerIdentifier3, 1300));
+  team2.addPlayer(new Player(playerIdentifier4, 1000));
+
+  const results = match.calculate();
+
+  expect(
+    results.results.find((c) => c.identifier === playerIdentifier1)?.rating
+  ).toBe(1109);
+  expect(
+    results.results.find((c) => c.identifier === playerIdentifier2)?.rating
+  ).toBe(1158);
+  expect(
+    results.results.find((c) => c.identifier === playerIdentifier3)?.rating
+  ).toBe(1289);
+  expect(
+    results.results.find((c) => c.identifier === playerIdentifier4)?.rating
+  ).toBe(995);
 });
