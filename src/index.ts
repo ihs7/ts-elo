@@ -69,7 +69,7 @@ export class Duel {
   addPlayer(player: Player, won: boolean): Duel {
     this.guardTooManyPlayers();
     this.guardDuplicate(player);
-    this.playerRanks.set(player.identifier, { player, rank: won ? 0 : 1 });
+    this.playerRanks.set(player.identifier, { player, rank: won ? 1 : 0 });
     return this;
   }
 
@@ -92,13 +92,13 @@ export class Duel {
 
 export class Team {
   public players: Player[] = [];
-  public rank: number;
+  public score: number;
 
   identifier: string;
 
-  constructor(identifier: string, rank: number) {
+  constructor(identifier: string, score: number) {
     this.identifier = identifier;
-    this.rank = rank;
+    this.score = score;
   }
 
   averageRating(): number {
@@ -243,11 +243,11 @@ export class EloMatchResult {
     function actual(): number {
       let s: number;
 
-      if (team.rank < otherTeam.rank) {
+      if (team.score > otherTeam.score) {
         s = 1;
-      } else if (team.rank == otherTeam.rank) {
+      } else if (team.score == otherTeam.score) {
         s = 0.5;
-      } else if (team.rank > otherTeam.rank) {
+      } else if (team.score < otherTeam.score) {
         s = 0;
       }
       return s;

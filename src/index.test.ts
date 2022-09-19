@@ -56,16 +56,32 @@ test("should calculate Duel correctly", () => {
   ).toBe(1192);
 });
 
+test("should calculate Duel correctly with rounding", () => {
+  const playerIdentifier1 = "1";
+  const playerIdentifier2 = "2";
+
+  const match = new Duel();
+  match.addPlayer(new Player(playerIdentifier1, 1200), true);
+  match.addPlayer(new Player(playerIdentifier2, 1200), false);
+  const results = match.calculate();
+  expect(
+    results.results.find((c) => c.identifier === playerIdentifier1)?.rating
+  ).toBe(1208);
+  expect(
+    results.results.find((c) => c.identifier === playerIdentifier2)?.rating
+  ).toBe(1192);
+});
+
 test("should calculate FreeForAll correctly", () => {
   const playerIdentifier1 = "1";
   const playerIdentifier2 = "2";
   const playerIdentifier3 = "3";
   const playerIdentifier4 = "4";
   const match = new FreeForAll();
-  match.addPlayer(new Player(playerIdentifier1, 1000), 1);
-  match.addPlayer(new Player(playerIdentifier2, 1200), 2);
-  match.addPlayer(new Player(playerIdentifier3, 1300), 3);
-  match.addPlayer(new Player(playerIdentifier4, 1500), 4);
+  match.addPlayer(new Player(playerIdentifier1, 1000), 4);
+  match.addPlayer(new Player(playerIdentifier2, 1200), 3);
+  match.addPlayer(new Player(playerIdentifier3, 1300), 2);
+  match.addPlayer(new Player(playerIdentifier4, 1500), 1);
   const results = match.calculate();
   expect(
     results.results.find((c) => c.identifier === playerIdentifier1)?.rating
@@ -81,6 +97,35 @@ test("should calculate FreeForAll correctly", () => {
   ).toBe(1462);
 });
 
+test("should calculate TeamMatch correctly with rounding", () => {
+  const playerIdentifier1 = "1";
+  const playerIdentifier2 = "2";
+  const playerIdentifier3 = "3";
+  const playerIdentifier4 = "4";
+
+  const match = new TeamMatch();
+  const team1 = match.addTeam("1", 2);
+  team1.addPlayer(new Player(playerIdentifier1, 1200));
+  team1.addPlayer(new Player(playerIdentifier2, 1200));
+  const team2 = match.addTeam("2", 1);
+  team2.addPlayer(new Player(playerIdentifier3, 1200));
+  team2.addPlayer(new Player(playerIdentifier4, 1200));
+
+  const results = match.calculate();
+  expect(
+    results.results.find((c) => c.identifier === playerIdentifier1)?.rating
+  ).toBe(1208);
+  expect(
+    results.results.find((c) => c.identifier === playerIdentifier2)?.rating
+  ).toBe(1208);
+  expect(
+    results.results.find((c) => c.identifier === playerIdentifier3)?.rating
+  ).toBe(1192);
+  expect(
+    results.results.find((c) => c.identifier === playerIdentifier4)?.rating
+  ).toBe(1192);
+});
+
 test("should calculate TeamMatch correctly with TEAM_VS_TEAM strategy", () => {
   const playerIdentifier1 = "1";
   const playerIdentifier2 = "2";
@@ -90,10 +135,10 @@ test("should calculate TeamMatch correctly with TEAM_VS_TEAM strategy", () => {
   const match = new TeamMatch({
     calculationStrategy: CalculationStrategy.TEAM_VS_TEAM,
   });
-  const team1 = match.addTeam("1", 1);
+  const team1 = match.addTeam("1", 2);
   team1.addPlayer(new Player(playerIdentifier1, 1100));
   team1.addPlayer(new Player(playerIdentifier2, 1150));
-  const team2 = match.addTeam("2", 2);
+  const team2 = match.addTeam("2", 1);
   team2.addPlayer(new Player(playerIdentifier3, 1300));
   team2.addPlayer(new Player(playerIdentifier4, 1000));
 
@@ -121,10 +166,10 @@ test("should calculate TeamMatch correctly with INDIVIDUAL_VS_TEAM strategy", ()
   const match = new TeamMatch({
     calculationStrategy: CalculationStrategy.INDIVIDUAL_VS_TEAM,
   });
-  const team1 = match.addTeam("1", 1);
+  const team1 = match.addTeam("1", 2);
   team1.addPlayer(new Player(playerIdentifier1, 1100));
   team1.addPlayer(new Player(playerIdentifier2, 1150));
-  const team2 = match.addTeam("2", 2);
+  const team2 = match.addTeam("2", 1);
   team2.addPlayer(new Player(playerIdentifier3, 1300));
   team2.addPlayer(new Player(playerIdentifier4, 1000));
 

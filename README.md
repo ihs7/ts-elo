@@ -30,9 +30,9 @@ Create a match between three players
 
 ```typescript
 const match = new FreeForAll();
-match.addPlayer(new Player("player-identifier-1", 1280), 1);
+match.addPlayer(new Player("player-identifier-1", 1280), 3);
 match.addPlayer(new Player("player-identifier-2", 1300), 2);
-match.addPlayer(new Player("player-identifier-3", 1220), 3);
+match.addPlayer(new Player("player-identifier-3", 1220), 1);
 const results = match.calculate();
 ```
 The calculations is based on:
@@ -48,10 +48,10 @@ The calculations is based on:
 
 ```typescript
 const match = new TeamMatch();
-const team1 = match.addTeam("1", 1);
+const team1 = match.addTeam("1", 2);
 team1.addPlayer(new Player("player-identifier-1", 1230));
 team1.addPlayer(new Player("player-identifier-2", 1260));
-const team2 = match.addTeam("2", 2);
+const team2 = match.addTeam("2", 1);
 team2.addPlayer(new Player("player-identifier-3", 1120));
 team2.addPlayer(new Player("player-identifier-4", 1410));
 const results = match.calculate();
