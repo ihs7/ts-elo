@@ -227,6 +227,34 @@ export class EloPlayerResult {
   }
 }
 
+export class RecommendTeamsOfTwo {
+  private players: Player[];
+
+  withPlayers(...players: Player[]) {
+    this.players = players;
+    return this;
+  }
+
+  recommend(): Map<string, string> {
+    if (this.players.length % 2 !== 0) {
+      throw new Error("Number of players is not even");
+    }
+
+    const teamMap = new Map<string, string>();
+
+    this.players.sort((a, b) => (a.rating > b.rating ? 1 : -1));
+
+    for (var i = 0; i < this.players.length / 2; i++) {
+      teamMap.set(
+        this.players[i].identifier,
+        this.players[this.players.length - i - 1].identifier
+      );
+    }
+
+    return teamMap;
+  }
+}
+
 export class EloMatchResult {
   private teams: Team[] = [];
   private kFactor: number;

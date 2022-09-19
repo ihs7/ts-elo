@@ -5,6 +5,7 @@ import {
   Player,
   TeamMatch,
   CalculationStrategy,
+  RecommendTeamsOfTwo,
 } from ".";
 
 test("should expect equal players to draw", () => {
@@ -187,4 +188,40 @@ test("should calculate TeamMatch correctly with INDIVIDUAL_VS_TEAM strategy", ()
   expect(
     results.results.find((c) => c.identifier === playerIdentifier4)?.rating
   ).toBe(995);
+});
+
+test("should recommend most balanced teams", () => {
+  const player1 = new Player("Player-1", 1100);
+  const player2 = new Player("Player-2", 1150);
+  const player3 = new Player("Player-3", 1300);
+  const player4 = new Player("Player-4", 1000);
+
+  const recommendTeams = new RecommendTeamsOfTwo()
+    .withPlayers(player1, player2, player3, player4)
+    .recommend();
+
+  const expectedMap = new Map<string, string>();
+  expectedMap.set("Player-4", "Player-3"); // Player 4 and 3 should be together
+  expectedMap.set("Player-1", "Player-2"); // Player 1 and 2 should be together
+  expect(recommendTeams).toStrictEqual(expectedMap);
+});
+
+test("should recommend most balanced three teams", () => {
+  const player1 = new Player("Player-1", 1100);
+  const player2 = new Player("Player-2", 1150);
+  const player3 = new Player("Player-3", 1300);
+  const player4 = new Player("Player-4", 1000);
+  const player5 = new Player("Player-5", 1500);
+  const player6 = new Player("Player-6", 1150);
+
+  const recommendTeams = new RecommendTeamsOfTwo()
+    .withPlayers(player1, player2, player3, player4, player5, player6)
+    .recommend();
+
+  console.log(recommendTeams);
+  const expectedMap = new Map<string, string>();
+  expectedMap.set("Player-1", "Player-3"); // Player 1 and 3 should be together
+  expectedMap.set("Player-4", "Player-5"); // Player 4 and 5 should be together
+  expectedMap.set("Player-6", "Player-2"); // Player 6 and 2 should be together
+  expect(recommendTeams).toStrictEqual(expectedMap);
 });
