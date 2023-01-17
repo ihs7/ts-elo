@@ -8,6 +8,7 @@
   "scripts": {
     "build": "tsc --outDir dist",
     "prettier": "prettier --write './src/**/*.ts'",
+    "prettier:check": "prettier --check './src/**/*.ts'",
     "test": "jest"
   },
   "keywords": [
