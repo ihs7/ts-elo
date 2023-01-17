@@ -34,7 +34,7 @@ jobs:
 
       - name:  Version check
         id: version-check
-        uses: EndBug/version-check@v2.1.0
+        uses: EndBug/version-check@v2.1.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
