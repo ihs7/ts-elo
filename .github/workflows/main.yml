@@ -9,6 +9,7 @@ jobs:
   build:
     name: 👷 Build
     runs-on: ubuntu-latest
+
     steps:
       - name: ⬇️ Checkout
         uses: actions/checkout@v3
@@ -17,7 +18,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "lts/gallium"
-          registry-url: "https://npm.pkg.github.com"
+          registry-url: "https://registry.npmjs.org"
 
       - name: 🎁 NPM cache
         uses: actions/cache@v3
@@ -57,4 +58,4 @@ jobs:
         id: run-publish
         run: npm run build && npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
