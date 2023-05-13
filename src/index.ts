@@ -1,20 +1,20 @@
 export enum CalculationStrategy {
-  TEAM_VS_TEAM,
-  INDIVIDUAL_VS_TEAM,
+  TEAM_VS_TEAM = "TEAM_VS_TEAM",
+  INDIVIDUAL_VS_TEAM = "INDIVIDUAL_VS_TEAM",
 }
 
 const DEFAULT_K_FACTOR = 15;
 const DEFAULT_CALCULATION_STRATEGY = CalculationStrategy.TEAM_VS_TEAM;
 
-type Options = {
+interface Options {
   kFactor?: number;
   calculationStrategy?: CalculationStrategy;
-};
+}
 
-type PlayerRank = {
+interface PlayerRank {
   player: Player;
   rank: number;
-};
+}
 
 export class Player {
   identifier: string;
@@ -25,11 +25,11 @@ export class Player {
     this.rating = rating;
   }
 
-  private expectedScore(versusRating: number): number {
+  private readonly expectedScore = (versusRating: number): number => {
     return 1 / (1 + Math.pow(10, (versusRating - this.rating) / 400));
-  }
+  };
 
-  public expectedScoreAgainst(other: Team | Player | number): number {
+  public expectedScoreAgainst = (other: Team | Player | number): number => {
     if (other instanceof Player) {
       return this.expectedScore(other.rating);
     } else if (other instanceof Team) {
@@ -37,13 +37,13 @@ export class Player {
     } else {
       return this.expectedScore(other);
     }
-  }
+  };
 }
 
 export class Duel {
-  private playerRanks: Map<string, PlayerRank> = new Map();
-  private kFactor: number;
-  private strategy: CalculationStrategy;
+  private readonly playerRanks = new Map<string, PlayerRank>();
+  private readonly kFactor: number;
+  private readonly strategy: CalculationStrategy;
 
   constructor(options?: Options) {
     this.playerRanks = new Map();
@@ -52,42 +52,42 @@ export class Duel {
       options?.calculationStrategy ?? DEFAULT_CALCULATION_STRATEGY;
   }
 
-  guardDuplicate(newPlayer: Player) {
+  guardDuplicate = (newPlayer: Player): void => {
     if (this.playerRanks.has(newPlayer.identifier)) {
       throw new Error(
         `Player with identifier ${newPlayer.identifier} already exists`
       );
     }
-  }
+  };
 
-  guardTooManyPlayers() {
+  guardTooManyPlayers = (): void => {
     if (this.playerRanks.size >= 2) {
       throw new Error("Too many playerRanks");
     }
-  }
+  };
 
-  addPlayer(player: Player, won: boolean): Duel {
+  addPlayer = (player: Player, won: boolean): Duel => {
     this.guardTooManyPlayers();
     this.guardDuplicate(player);
     this.playerRanks.set(player.identifier, { player, rank: won ? 1 : 0 });
     return this;
-  }
+  };
 
-  calculate(): EloMatchResult {
+  calculate = (): EloMatchResult => {
     if (this.playerRanks.size < 2) {
       throw new Error("Must have 2 playerRanks");
     }
 
-    let teams = new Array<Team>();
+    const teams = new Array<Team>();
 
-    for (var playerRank of this.playerRanks) {
+    for (const playerRank of this.playerRanks) {
       const team = new Team(playerRank[0], playerRank[1].rank);
       team.addPlayer(playerRank[1].player);
       teams.push(team);
     }
 
     return new EloMatchResult(teams, this.kFactor, this.strategy).calculate();
-  }
+  };
 }
 
 export class Team {
@@ -101,23 +101,23 @@ export class Team {
     this.score = score;
   }
 
-  averageRating(): number {
+  averageRating = (): number => {
     const yourTeamRating = this.players.reduce((acc, team) => {
       return acc + team.rating;
     }, 0);
     return yourTeamRating / this.players.length;
-  }
+  };
 
-  addPlayer(player: Player): Team {
+  addPlayer = (player: Player): Team => {
     this.players.push(player);
     return this;
-  }
+  };
 
-  private expectedScore(versusRating: number): number {
+  private readonly expectedScore = (versusRating: number): number => {
     return 1 / (1 + Math.pow(10, (versusRating - this.averageRating()) / 400));
-  }
+  };
 
-  public expectedScoreAgainst(other: Team | Player | number): number {
+  public expectedScoreAgainst = (other: Team | Player | number): number => {
     if (other instanceof Player) {
       return this.expectedScore(other.rating);
     } else if (other instanceof Team) {
@@ -125,14 +125,14 @@ export class Team {
     } else {
       return this.expectedScore(other);
     }
-  }
+  };
 }
 
 export class TeamMatch {
-  private playerRanks: Map<string, PlayerRank> = new Map();
-  private teams: Team[] = [];
-  private kFactor: number;
-  private strategy: CalculationStrategy;
+  private readonly playerRanks = new Map<string, PlayerRank>();
+  private readonly teams: Team[] = [];
+  private readonly kFactor: number;
+  private readonly strategy: CalculationStrategy;
 
   constructor(options?: Options) {
     this.playerRanks = new Map();
@@ -141,39 +141,39 @@ export class TeamMatch {
       options?.calculationStrategy ?? DEFAULT_CALCULATION_STRATEGY;
   }
 
-  guardDuplicate(newPlayer: Player) {
+  guardDuplicate = (newPlayer: Player): void => {
     if (this.playerRanks.has(newPlayer.identifier)) {
       throw new Error(
         `Player with identifier ${newPlayer.identifier} already exists`
       );
     }
-  }
+  };
 
-  guardTooManyPlayers() {
+  guardTooManyPlayers = (): void => {
     if (this.playerRanks.size >= 2) {
       throw new Error("Too many playerRanks");
     }
-  }
+  };
 
-  addTeam(teamIdentifier: string, rank: number): Team {
+  addTeam = (teamIdentifier: string, rank: number): Team => {
     const team = new Team(teamIdentifier, rank);
     this.teams.push(team);
     return team;
-  }
+  };
 
-  calculate(): EloMatchResult {
+  calculate = (): EloMatchResult => {
     return new EloMatchResult(
       this.teams,
       this.kFactor,
       this.strategy
     ).calculate();
-  }
+  };
 }
 
 export class FreeForAll {
-  private playerRanks: Map<string, PlayerRank> = new Map();
-  private kFactor: number;
-  private strategy: CalculationStrategy;
+  private readonly playerRanks = new Map<string, PlayerRank>();
+  private readonly kFactor: number;
+  private readonly strategy: CalculationStrategy;
 
   constructor(options?: Options) {
     this.playerRanks = new Map();
@@ -186,35 +186,35 @@ export class FreeForAll {
     return new FreeForAll(options);
   };
 
-  guardDuplicate(newPlayer: Player) {
+  guardDuplicate = (newPlayer: Player): void => {
     if (this.playerRanks.has(newPlayer.identifier)) {
       throw new Error(
         `Player with identifier ${newPlayer.identifier} already exists`
       );
     }
-  }
+  };
 
-  addPlayer(player: Player, rank: number): FreeForAll {
+  addPlayer = (player: Player, rank: number): FreeForAll => {
     this.guardDuplicate(player);
     this.playerRanks.set(player.identifier, { player, rank });
     return this;
-  }
+  };
 
-  calculate(): EloMatchResult {
+  calculate = (): EloMatchResult => {
     if (this.playerRanks.size < 2) {
       throw new Error("Must have at least 2 playerRanks");
     }
 
-    let teams = new Array<Team>();
+    const teams = new Array<Team>();
 
-    for (var playerRank of this.playerRanks) {
-      const team = new Team(playerRank[0], playerRank[1].rank);
-      team.addPlayer(playerRank[1].player);
+    Array.from(this.playerRanks).forEach(([identifier, playerRank]) => {
+      const team = new Team(identifier, playerRank.rank);
+      team.addPlayer(playerRank.player);
       teams.push(team);
-    }
+    });
 
     return new EloMatchResult(teams, this.kFactor, this.strategy).calculate();
-  }
+  };
 }
 
 export class EloPlayerResult {
@@ -228,9 +228,9 @@ export class EloPlayerResult {
 }
 
 export class EloMatchResult {
-  private teams: Team[] = [];
-  private kFactor: number;
-  private strategy: CalculationStrategy;
+  private readonly teams: Team[] = [];
+  private readonly kFactor: number;
+  private readonly strategy: CalculationStrategy;
   public results: EloPlayerResult[] = [];
 
   constructor(teams: Team[], kFactor: number, strategy: CalculationStrategy) {
@@ -239,13 +239,13 @@ export class EloMatchResult {
     this.strategy = strategy;
   }
 
-  calculate(): EloMatchResult {
-    function actual(): number {
-      let s: number;
+  calculate = (): EloMatchResult => {
+    function actual(team: Team, otherTeam: Team): number {
+      let s = 0;
 
       if (team.score > otherTeam.score) {
         s = 1;
-      } else if (team.score == otherTeam.score) {
+      } else if (team.score === otherTeam.score) {
         s = 0.5;
       } else if (team.score < otherTeam.score) {
         s = 0;
@@ -253,20 +253,22 @@ export class EloMatchResult {
       return s;
     }
 
-    for (var team of this.teams) {
-      for (var player of team.players) {
+    for (const team of this.teams) {
+      for (const player of team.players) {
         let eloDiff: number = 0;
-        for (var otherTeam of this.teams.filter(
+        for (const otherTeam of this.teams.filter(
           (otherTeam) => otherTeam.identifier !== team.identifier
         )) {
           if (this.strategy === CalculationStrategy.TEAM_VS_TEAM) {
             eloDiff +=
               this.kFactor *
-              (actual() - team.expectedScoreAgainst(otherTeam.averageRating()));
+              (actual(team, otherTeam) -
+                team.expectedScoreAgainst(otherTeam.averageRating()));
           } else if (this.strategy === CalculationStrategy.INDIVIDUAL_VS_TEAM) {
             eloDiff +=
               this.kFactor *
-              (actual() - player.expectedScoreAgainst(otherTeam));
+              (actual(team, otherTeam) -
+                player.expectedScoreAgainst(otherTeam));
           }
         }
 
@@ -277,5 +279,5 @@ export class EloMatchResult {
     }
 
     return this;
-  }
+  };
 }
