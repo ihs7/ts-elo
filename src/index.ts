@@ -55,7 +55,7 @@ export class Duel {
   guardDuplicate = (newPlayer: Player): void => {
     if (this.playerRanks.has(newPlayer.identifier)) {
       throw new Error(
-        `Player with identifier ${newPlayer.identifier} already exists`
+        `Player with identifier ${newPlayer.identifier} already exists`,
       );
     }
   };
@@ -144,7 +144,7 @@ export class TeamMatch {
   guardDuplicate = (newPlayer: Player): void => {
     if (this.playerRanks.has(newPlayer.identifier)) {
       throw new Error(
-        `Player with identifier ${newPlayer.identifier} already exists`
+        `Player with identifier ${newPlayer.identifier} already exists`,
       );
     }
   };
@@ -165,7 +165,7 @@ export class TeamMatch {
     return new EloMatchResult(
       this.teams,
       this.kFactor,
-      this.strategy
+      this.strategy,
     ).calculate();
   };
 }
@@ -189,7 +189,7 @@ export class FreeForAll {
   guardDuplicate = (newPlayer: Player): void => {
     if (this.playerRanks.has(newPlayer.identifier)) {
       throw new Error(
-        `Player with identifier ${newPlayer.identifier} already exists`
+        `Player with identifier ${newPlayer.identifier} already exists`,
       );
     }
   };
@@ -257,7 +257,7 @@ export class EloMatchResult {
       for (const player of team.players) {
         let eloDiff: number = 0;
         for (const otherTeam of this.teams.filter(
-          (otherTeam) => otherTeam.identifier !== team.identifier
+          (otherTeam) => otherTeam.identifier !== team.identifier,
         )) {
           if (this.strategy === CalculationStrategy.TEAM_VS_TEAM) {
             eloDiff +=
