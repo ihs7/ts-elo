@@ -49,10 +49,10 @@ test("should calculate Duel correctly", () => {
   match.addPlayer(new Player(playerIdentifier2, 1200), false);
   const results = match.calculate();
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier1)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier1)?.rating,
   ).toBe(1207);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier2)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier2)?.rating,
   ).toBe(1192);
 });
 
@@ -65,10 +65,10 @@ test("should calculate Duel correctly with rounding", () => {
   match.addPlayer(new Player(playerIdentifier2, 1200), false);
   const results = match.calculate();
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier1)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier1)?.rating,
   ).toBe(1208);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier2)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier2)?.rating,
   ).toBe(1192);
 });
 
@@ -84,16 +84,16 @@ test("should calculate FreeForAll correctly", () => {
   match.addPlayer(new Player(playerIdentifier4, 1500), 1);
   const results = match.calculate();
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier1)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier1)?.rating,
   ).toBe(1038);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier2)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier2)?.rating,
   ).toBe(1211);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier3)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier3)?.rating,
   ).toBe(1289);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier4)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier4)?.rating,
   ).toBe(1462);
 });
 
@@ -113,16 +113,16 @@ test("should calculate TeamMatch correctly with rounding", () => {
 
   const results = match.calculate();
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier1)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier1)?.rating,
   ).toBe(1208);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier2)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier2)?.rating,
   ).toBe(1208);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier3)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier3)?.rating,
   ).toBe(1192);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier4)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier4)?.rating,
   ).toBe(1192);
 });
 
@@ -144,16 +144,16 @@ test("should calculate TeamMatch correctly with TEAM_VS_TEAM strategy", () => {
 
   const results = match.calculate();
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier1)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier1)?.rating,
   ).toBe(1108);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier2)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier2)?.rating,
   ).toBe(1158);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier3)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier3)?.rating,
   ).toBe(1292);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier4)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier4)?.rating,
   ).toBe(992);
 });
 
@@ -176,15 +176,15 @@ test("should calculate TeamMatch correctly with INDIVIDUAL_VS_TEAM strategy", ()
   const results = match.calculate();
 
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier1)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier1)?.rating,
   ).toBe(1109);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier2)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier2)?.rating,
   ).toBe(1158);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier3)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier3)?.rating,
   ).toBe(1289);
   expect(
-    results.results.find((c) => c.identifier === playerIdentifier4)?.rating
+    results.results.find((c) => c.identifier === playerIdentifier4)?.rating,
   ).toBe(995);
 });
