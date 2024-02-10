@@ -66,7 +66,7 @@ export class Duel {
     }
   };
 
-  addPlayer = (player: Player, won: boolean): Duel => {
+  addPlayer = (player: Player, won: boolean): this => {
     this.guardTooManyPlayers();
     this.guardDuplicate(player);
     this.playerRanks.set(player.identifier, { player, rank: won ? 1 : 0 });
@@ -108,7 +108,7 @@ export class Team {
     return yourTeamRating / this.players.length;
   };
 
-  addPlayer = (player: Player): Team => {
+  addPlayer = (player: Player): this => {
     this.players.push(player);
     return this;
   };
@@ -194,7 +194,7 @@ export class FreeForAll {
     }
   };
 
-  addPlayer = (player: Player, rank: number): FreeForAll => {
+  addPlayer = (player: Player, rank: number): this => {
     this.guardDuplicate(player);
     this.playerRanks.set(player.identifier, { player, rank });
     return this;
@@ -239,7 +239,7 @@ export class EloMatchResult {
     this.strategy = strategy;
   }
 
-  calculate = (): EloMatchResult => {
+  calculate = (): this => {
     function actual(team: Team, otherTeam: Team): number {
       let s = 0;
 
