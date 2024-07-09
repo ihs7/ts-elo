@@ -255,7 +255,7 @@ export class EloMatchResult {
 
     for (const team of this.teams) {
       for (const player of team.players) {
-        let eloDiff: number = 0;
+        let eloDiff = 0;
         for (const otherTeam of this.teams.filter(
           (otherTeam) => otherTeam.identifier !== team.identifier,
         )) {
