@@ -1,10 +1,10 @@
 export enum CalculationStrategy {
-  TEAM_VS_TEAM = "TEAM_VS_TEAM",
-  INDIVIDUAL_VS_TEAM = "INDIVIDUAL_VS_TEAM",
+  AVERAGE_TEAMS = "AVERAGE_TEAMS",
+  WEIGHTED_TEAMS = "WEIGHTED_TEAMS",
 }
 
 const DEFAULT_K_FACTOR = 15;
-const DEFAULT_CALCULATION_STRATEGY = CalculationStrategy.TEAM_VS_TEAM;
+const DEFAULT_CALCULATION_STRATEGY = CalculationStrategy.AVERAGE_TEAMS;
 
 interface Options {
   kFactor?: number;
@@ -22,7 +22,7 @@ export class Player {
 
   constructor(identifier: string, rating: number) {
     this.identifier = identifier;
-    this.rating = rating;
+    this.rating = Math.round(rating);
   }
 
   private readonly expectedScore = (versusRating: number): number => {
@@ -108,6 +108,26 @@ export class Team {
     return yourTeamRating / this.players.length;
   };
 
+  totalRating = (): number => {
+    return this.players.reduce((acc, player) => {
+      return acc + player.rating;
+    }, 0);
+  };
+
+  getPlayerWeight = (player: Player): number => {
+    let playerWeight = player.rating / this.totalRating();
+
+    // Adjust player weight to acommodate rounding for both negative and positive numbers
+    // This assumes that the player that has larger weight takes a bigger hit/win in
+    // case of rounding problems.
+    if (playerWeight > 0.5) {
+      playerWeight += 0.0001;
+    } else {
+      playerWeight -= 0.0001;
+    }
+    return playerWeight;
+  };
+
   addPlayer = (player: Player): this => {
     this.players.push(player);
     return this;
@@ -159,6 +179,10 @@ export class TeamMatch {
     const team = new Team(teamIdentifier, rank);
     this.teams.push(team);
     return team;
+  };
+
+  getTeams = () => {
+    return this.teams;
   };
 
   calculate = (): EloMatchResult => {
@@ -240,7 +264,7 @@ export class EloMatchResult {
   }
 
   calculate = (): this => {
-    function actual(team: Team, otherTeam: Team): number {
+    const actual = (team: Team, otherTeam: Team): number => {
       let s = 0;
 
       if (team.score > otherTeam.score) {
@@ -251,32 +275,46 @@ export class EloMatchResult {
         s = 0;
       }
       return s;
-    }
+    };
 
+    const teamVsTeam = (
+      kFactor: number,
+      team: Team,
+      otherTeam: Team,
+    ): number => {
+      return (
+        kFactor *
+        (actual(team, otherTeam) -
+          team.expectedScoreAgainst(otherTeam.averageRating()))
+      );
+    };
+
+    const playerEloDiff = new Map<Player, number>();
     for (const team of this.teams) {
+      let eloDiff = 0;
+      for (const otherTeam of this.teams.filter(
+        (otherTeam) => otherTeam.identifier !== team.identifier,
+      )) {
+        eloDiff += teamVsTeam(this.kFactor, team, otherTeam);
+      }
+      eloDiff = Math.sign(eloDiff) * Math.round(Math.abs(eloDiff));
       for (const player of team.players) {
-        let eloDiff = 0;
-        for (const otherTeam of this.teams.filter(
-          (otherTeam) => otherTeam.identifier !== team.identifier,
-        )) {
-          if (this.strategy === CalculationStrategy.TEAM_VS_TEAM) {
-            eloDiff +=
-              this.kFactor *
-              (actual(team, otherTeam) -
-                team.expectedScoreAgainst(otherTeam.averageRating()));
-          } else if (this.strategy === CalculationStrategy.INDIVIDUAL_VS_TEAM) {
-            eloDiff +=
-              this.kFactor *
-              (actual(team, otherTeam) -
-                player.expectedScoreAgainst(otherTeam));
-          }
+        if (this.strategy === CalculationStrategy.WEIGHTED_TEAMS) {
+          const playerWeight = team.getPlayerWeight(player);
+          playerEloDiff.set(
+            player,
+            Math.round(eloDiff * team.players.length * playerWeight),
+          );
+        } else {
+          playerEloDiff.set(player, eloDiff);
         }
-
-        const newRating =
-          player.rating + Math.sign(eloDiff) * Math.round(Math.abs(eloDiff));
-        this.results.push(new EloPlayerResult(player.identifier, newRating));
       }
     }
+
+    playerEloDiff.forEach((eloDiff, player) => {
+      const newRating = player.rating + eloDiff;
+      this.results.push(new EloPlayerResult(player.identifier, newRating));
+    });
 
     return this;
   };
