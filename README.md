@@ -20,7 +20,7 @@ Create and calculate match between two players
 const match = new Duel();
 match.addPlayer(new Player("player-identifier-1", 1200), true);
 match.addPlayer(new Player("player-identifier-2", 1320), false);
-const results = await match.calculate();
+const results = match.calculate();
 ```
 
 ### Three player scenario
@@ -37,7 +37,7 @@ const match = new FreeForAll();
 match.addPlayer(new Player("player-identifier-1", 1280), 3);
 match.addPlayer(new Player("player-identifier-2", 1300), 2);
 match.addPlayer(new Player("player-identifier-3", 1220), 1);
-const results = await match.calculate();
+const results = match.calculate();
 ```
 
 The calculations is based on:
@@ -61,7 +61,7 @@ team1.addPlayer(new Player("player-identifier-2", 1260));
 const team2 = match.addTeam("2", 1);
 team2.addPlayer(new Player("player-identifier-3", 1120));
 team2.addPlayer(new Player("player-identifier-4", 1410));
-const results = await match.calculate();
+const results = match.calculate();
 ```
 
 Each team has a rating which is an average of the team members.
@@ -86,7 +86,7 @@ team1.addPlayer(new Player("player-identifier-2", 1400));
 const team2 = match.addTeam("2", 1);
 team2.addPlayer(new Player("player-identifier-3", 1200));
 team2.addPlayer(new Player("player-identifier-4", 1600));
-const results = await match.calculate({
+const results = match.calculate({
   calculationStrategy: CalculationStrategy.WEIGHTED_TEAMS,
 });
 ```
