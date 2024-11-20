@@ -9,6 +9,10 @@ updates:
   - "ihs7"
   reviewers:
   - "ihs7"
+  groups:
+    standard-actions:
+      patterns:
+        - "actions/*"
 
 - package-ecosystem: "npm"
   directory: "/"
