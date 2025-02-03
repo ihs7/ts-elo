@@ -22,3 +22,10 @@ updates:
   - "ihs7"
   reviewers:
   - "ihs7"
+  groups:
+    eslint:
+      patterns:
+        - "*eslint*"
+    jest:
+      patterns:
+        - "*jest*"
