@@ -7,6 +7,94 @@ import {
   CalculationStrategy,
 } from ".";
 
+// Validation tests
+test("should throw error for empty player identifier", () => {
+  expect(() => new Player("", 1200)).toThrow(
+    "Player identifier cannot be empty",
+  );
+  expect(() => new Player("   ", 1200)).toThrow(
+    "Player identifier cannot be empty",
+  );
+});
+
+test("should throw error for invalid player rating", () => {
+  expect(() => new Player("test", NaN)).toThrow(
+    "Player rating must be a finite number",
+  );
+  expect(() => new Player("test", Infinity)).toThrow(
+    "Player rating must be a finite number",
+  );
+});
+
+test("should throw error for empty team identifier", () => {
+  expect(() => new Team("", 1)).toThrow("Team identifier cannot be empty");
+  expect(() => new Team("   ", 1)).toThrow("Team identifier cannot be empty");
+});
+
+test("should throw error for invalid team score", () => {
+  expect(() => new Team("test", NaN)).toThrow(
+    "Team score must be a finite number",
+  );
+  expect(() => new Team("test", Infinity)).toThrow(
+    "Team score must be a finite number",
+  );
+});
+
+test("should throw error when calculating average rating for empty team", () => {
+  const team = new Team("test", 1);
+  expect(() => team.averageRating()).toThrow(
+    "Cannot calculate average rating for team with no players",
+  );
+});
+
+test("should throw error when adding duplicate player to team", () => {
+  const team = new Team("test", 1);
+  const player = new Player("player1", 1200);
+  team.addPlayer(player);
+  expect(() => team.addPlayer(player)).toThrow(
+    "Player player1 is already in team test",
+  );
+});
+
+test("should trim whitespace from identifiers", () => {
+  const player = new Player("  test  ", 1200);
+  expect(player.identifier).toBe("test");
+
+  const team = new Team("  team  ", 1);
+  expect(team.identifier).toBe("team");
+});
+
+test("should throw error when adding too many players to duel", () => {
+  const match = new Duel();
+  match.addPlayer(new Player("player1", 1200), true);
+  match.addPlayer(new Player("player2", 1200), false);
+
+  expect(() => match.addPlayer(new Player("player3", 1200), false)).toThrow(
+    "Duel matches can only have 2 players. Use FreeForAll or TeamMatch for more players.",
+  );
+});
+
+test("should throw error when adding duplicate player to duel", () => {
+  const match = new Duel();
+  const player = new Player("player1", 1200);
+  match.addPlayer(player, true);
+
+  expect(() => match.addPlayer(player, false)).toThrow(
+    "Player with identifier 'player1' is already in this duel",
+  );
+});
+
+test("should throw error when calculating duel with insufficient players", () => {
+  const match = new Duel();
+  match.addPlayer(new Player("player1", 1200), true);
+
+  expect(() => match.calculate()).toThrow(
+    "Duel must have exactly 2 players to calculate results",
+  );
+});
+
+// Existing tests
+
 test("should expect equal players to draw", () => {
   const player1 = new Player("1", 1200);
   const player2 = new Player("2", 1200);

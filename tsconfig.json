@@ -6,8 +6,9 @@
     "strictNullChecks": true,
     "moduleResolution": "node",
     "alwaysStrict": true,
-    "declaration": true
+    "declaration": true,
+    "skipLibCheck": true
   },
-  "exclude": ["node_modules", "src/**/*.test.ts"],
+  "exclude": ["node_modules", "src/**/*.test.ts", "eslint.config.mjs"],
   "include": ["./src"]
 }

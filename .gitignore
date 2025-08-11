@@ -1,3 +1,7 @@
 dist
 node_modules
 .npmrc
+
+# Coverage directory used by tools like istanbul
+coverage
+*.lcov
