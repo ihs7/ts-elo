@@ -18,7 +18,7 @@ jobs:
         uses: ihs7/action-sha-pinned-actions@e805c42c9e2c7deb3f339079c143507c28df129f # v1.0.0
 
       - name: ⎔ Setup node
-        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version-file: .node-version
           registry-url: "https://registry.npmjs.org"
