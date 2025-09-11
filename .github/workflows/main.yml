@@ -18,7 +18,7 @@ jobs:
         uses: ihs7/action-sha-pinned-actions@e805c42c9e2c7deb3f339079c143507c28df129f # v1.0.0
 
       - name: ⎔ Setup node
-        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version-file: .node-version
           registry-url: "https://registry.npmjs.org"
@@ -28,10 +28,6 @@ jobs:
         id: run-npm-i
         run: npm ci --ignore-scripts
         shell: bash
-      
-      - name: Build
-        id: run-build
-        run: npm run build
 
       - name: Prettier check
         id: prettier-check
@@ -54,6 +50,9 @@ jobs:
       - name: Publish
         if: steps.version-check.outputs.changed == 'true'
         id: run-publish
-        run: npm run build && npm publish
+        run: |
+          npm run build
+          npm config set //registry.npmjs.org/:_authToken $NODE_AUTH_TOKEN
+          npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}

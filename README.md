@@ -4,110 +4,240 @@ ELO calculation library in TypeScript
 
 Supports heads up, team and multiplayer calculations
 
-### Installing ts-elo
+## Installation
 
-    npm i @ihs7/ts-elo
-
-### Two player scenario
-
-Create and calculate match between two players
-
-- Player 1 has 1200 rating and wins
-- Player 2 has 1320 rating and loses
-- Get results
-
-```typescript
-const match = new Duel();
-match.addPlayer(new Player("player-identifier-1", 1200), true);
-match.addPlayer(new Player("player-identifier-2", 1320), false);
-const results = match.calculate();
+```bash
+npm i @ihs7/ts-elo
 ```
 
-### Three player scenario
+## Quick Examples
 
-Create a match between three players
-
-- Player 1 has 1280 rating and places 1st
-- Player 2 has 1300 rating and places 2nd
-- Player 3 has 1220 rating and places 3rd
-- Get results
+### 1v1 Duel
 
 ```typescript
-const match = new FreeForAll();
-match.addPlayer(new Player("player-identifier-1", 1280), 3);
-match.addPlayer(new Player("player-identifier-2", 1300), 2);
-match.addPlayer(new Player("player-identifier-3", 1220), 1);
-const results = match.calculate();
+import { calculateDuel } from "@ihs7/ts-elo";
+
+const results = calculateDuel(
+  { id: "player1", rating: 1200 }, // winner
+  { id: "player2", rating: 1320 }, // loser
+  { kFactor: 15 } // optional
+);
+
+console.log(results);
+// [
+//   { id: "player1", newRating: 1219 },
+//   { id: "player2", newRating: 1301 }
+// ]
 ```
 
-The calculations is based on:
-
-- Player 1 won Player 2 and Player 3
-- Player 2 won Player 3 and lost to Player 1
-- Player 3 lost to Player 1 and Player 2
-
-### Two versus two scenario
-
-- Team 1 consists of Player 1 with 1230 ELO and Player 2 with 1260 ELO
-- Team 2 consists of Player 3 with 1120 ELO and Player 4 with 1410 ELO
-- Team 1 wins Team 2
-- Get results
+### Free-for-All (3+ players)
 
 ```typescript
-const match = new TeamMatch();
-const team1 = match.addTeam("1", 2);
-team1.addPlayer(new Player("player-identifier-1", 1230));
-team1.addPlayer(new Player("player-identifier-2", 1260));
-const team2 = match.addTeam("2", 1);
-team2.addPlayer(new Player("player-identifier-3", 1120));
-team2.addPlayer(new Player("player-identifier-4", 1410));
-const results = match.calculate();
+import { calculateFreeForAll } from "@ihs7/ts-elo";
+
+const results = calculateFreeForAll([
+  { player: { id: "player1", rating: 1280 }, score: 100 }, // 1st place
+  { player: { id: "player2", rating: 1300 }, score: 75 }, // 2nd place
+  { player: { id: "player3", rating: 1220 }, score: 50 }, // 3rd place
+]);
+
+console.log(results);
+// [
+//   { id: "player1", newRating: 1294 },
+//   { id: "player2", newRating: 1299 },
+//   { id: "player3", newRating: 1207 }
+// ]
 ```
 
-Each team has a rating which is an average of the team members.
+**Note**: Higher score = better performance (100 = winner, 75 = second place, etc.)
 
-- Team 1 has a rating of 1245 ((1230+1260)/2)
-- Team 2 has a rating of 1265 ((1120+1410)/2)
-
-### Calculation Strategies in Team Matches
-
-By default when creating TeamMatch, the results are calculated using average team rating as if the teams were individuals. However, you can also use `WEIGHTED_TEAMS` strategy to have the results calculated based on individual player ratings within the team.
-
-- Team 1 consists of Player 1 with 1000 ELO and Player 2 with 1400 ELO
-- Team 2 consists of Player 3 with 1200 ELO and Player 4 with 1600 ELO
-- Team 1 wins Team 2
-- Get results
+### Team Match
 
 ```typescript
-const match = new TeamMatch();
-const team1 = match.addTeam("1", 2);
-team1.addPlayer(new Player("player-identifier-1", 1000));
-team1.addPlayer(new Player("player-identifier-2", 1400));
-const team2 = match.addTeam("2", 1);
-team2.addPlayer(new Player("player-identifier-3", 1200));
-team2.addPlayer(new Player("player-identifier-4", 1600));
-const results = match.calculate({
-  calculationStrategy: CalculationStrategy.WEIGHTED_TEAMS,
+import { calculateTeamMatch, CalculationStrategy } from "@ihs7/ts-elo";
+
+const winningTeam = {
+  players: [
+    { id: "p1", rating: 1230 },
+    { id: "p2", rating: 1260 },
+  ],
+  score: 100, // winning team (higher score = better)
+};
+
+const losingTeam = {
+  players: [
+    { id: "p3", rating: 1120 },
+    { id: "p4", rating: 1410 },
+  ],
+  score: 50, // losing team
+};
+
+const results = calculateTeamMatch(winningTeam, losingTeam, {
+  strategy: CalculationStrategy.AVERAGE_TEAMS, // default
+  kFactor: 15, // default
+});
+
+console.log(results);
+// [
+//   { id: "p1", newRating: 1237 },
+//   { id: "p2", newRating: 1267 },
+//   { id: "p3", newRating: 1113 },
+//   { id: "p4", newRating: 1403 }
+// ]
+```
+
+### Multi-Team Match (3+ teams)
+
+```typescript
+import { calculateMultiTeamMatch, CalculationStrategy } from "@ihs7/ts-elo";
+
+const teams = [
+  {
+    players: [{ id: "p1", rating: 1200 }],
+    score: 100, // 1st place
+  },
+  {
+    players: [{ id: "p2", rating: 1200 }],
+    score: 75, // 2nd place
+  },
+  {
+    players: [{ id: "p3", rating: 1200 }],
+    score: 50, // 3rd place
+  },
+];
+
+const results = calculateMultiTeamMatch(teams, {
+  strategy: CalculationStrategy.AVERAGE_TEAMS,
 });
 ```
 
-Each team has a rating which is an average of the team members. This is used as a basis of calculation:
+## Team Calculation Strategies
 
-- Team 1 has a rating of 1200 ((1000+1400)/2)
-- Team 2 has a rating of 1400 ((1200+1600)/2)
+### Average Teams (Default)
 
-Then after calculating the expected score of each player in the team, the results are calculated based on individual player ratings within the team. For example, Player 1 has a weight of 1000/(1000+1400) ~ 0.4167 and Player 2 has a weight of 0.5833. The same is done for Team 2 and the ELO changes are distributed based on these weights.
+All team members get the same rating change based on team average ratings.
 
-With this calculation method, the players are rewarded or penalized based on their rating contribution to the team.
+### Weighted Teams
 
-### Get expected score between two ratings
-
-Say you have two players, one with 1460 ELO and another with 1130 ELO, and want to know the likelihood of one winning another.
+Rating changes are distributed based on individual player contributions to the team.
 
 ```typescript
-const player1 = new Player("player-identifier-1", 1460);
-const player2 = new Player("player-identifier-2", 1130);
-const expectedScore = player1.expectedScoreAgainst(player2);
+import { calculateTeamMatch, CalculationStrategy } from "@ihs7/ts-elo";
+
+const teamA = {
+  players: [
+    { id: "p1", rating: 700 },
+    { id: "p2", rating: 1150 },
+  ],
+  score: 85,
+};
+
+const teamB = {
+  players: [
+    { id: "p3", rating: 1300 },
+    { id: "p4", rating: 1000 },
+  ],
+  score: 75,
+};
+
+const results = calculateTeamMatch(teamA, teamB, {
+  strategy: CalculationStrategy.WEIGHTED_TEAMS,
+});
 ```
 
-This returns a float number and in this specific scenario the value is 0.8698499 meaning the higher ranked player is estimated to win 87% of encounters.
+With weighted strategy:
+
+- Higher-rated players get larger rating changes
+- Reflects individual skill contribution to team performance
+
+## Utility Function
+
+### Expected Score
+
+Calculate the probability of one entity beating another. Supports numbers, Player objects, and Team objects:
+
+```typescript
+import { calculateExpectedScore } from "@ihs7/ts-elo";
+
+// Using ratings directly
+const expected1 = calculateExpectedScore(1460, 1130);
+console.log(expected1); // 0.87
+
+// Using Player objects  
+const player1 = { id: "p1", rating: 1460 };
+const player2 = { id: "p2", rating: 1130 };
+const expected2 = calculateExpectedScore(player1, player2);
+
+// Using Team objects (uses average rating)
+const team1 = { players: [{ id: "p1", rating: 1400 }, { id: "p2", rating: 1500 }] };
+const team2 = { players: [{ id: "p3", rating: 1200 }, { id: "p4", rating: 1100 }] };
+const expected3 = calculateExpectedScore(team1, team2);
+
+// Mixed types work too
+const expected4 = calculateExpectedScore(player1, team2);
+```
+
+## API Reference
+
+### Types
+
+```typescript
+interface Player {
+  id: string;
+  rating: number;
+}
+
+interface MatchResultItem {
+  id: string;
+  newRating: number;
+}
+
+type MatchResult = MatchResultItem[];
+
+interface Options {
+  kFactor?: number; // default: 15
+  strategy?: CalculationStrategy; // default: AVERAGE_TEAMS
+}
+
+interface PlayerWithScore {
+  player: Player;
+  score: number; // higher = better performance
+}
+
+interface TeamWithScore {
+  players: Player[];
+  score: number; // higher = better performance
+}
+
+interface Team {
+  players: Player[];
+}
+
+enum CalculationStrategy {
+  AVERAGE_TEAMS = "AVERAGE_TEAMS",
+  WEIGHTED_TEAMS = "WEIGHTED_TEAMS",
+}
+```
+
+### Functions
+
+```typescript
+// 1v1 match
+calculateDuel(winner: Player, loser: Player, options?: Options): MatchResult
+
+// Free-for-all match
+calculateFreeForAll(playersWithScores: PlayerWithScore[], options?: Options): MatchResult
+
+// Team match (2 teams)
+calculateTeamMatch(team1: TeamWithScore, team2: TeamWithScore, options?: Options): MatchResult
+
+// Multi-team match (3+ teams, tournaments)
+calculateMultiTeamMatch(teams: TeamWithScore[], options?: Options): MatchResult
+
+// Expected score calculation
+calculateExpectedScore(entity1: number | Player | Team, entity2: number | Player | Team): number
+```
+
+## Migration from v1
+
+See [MIGRATION_v2.md](./MIGRATION_v2.md) for a complete migration guide.
