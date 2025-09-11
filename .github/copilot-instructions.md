@@ -9,7 +9,7 @@ This is a TypeScript library implementing the Elo rating system for competitive 
 ### Match Types & Calculation Flow
 
 - **`Duel`**: 1v1 matches using boolean win/loss
-- **`FreeForAll`**: Multi-player matches using numeric rankings (1st, 2nd, 3rd, etc.)
+- **`FreeForAll`**: Multi-player matches using numeric scores (higher score = better performance)
 - **`TeamMatch`**: Team-based matches with two calculation strategies:
   - `AVERAGE_TEAMS`: Teams treated as single entities with average ratings
   - `WEIGHTED_TEAMS`: Individual player contributions weighted by their rating percentage within the team
