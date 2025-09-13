@@ -28,6 +28,10 @@ jobs:
         run: npm ci --ignore-scripts
         shell: bash
 
+      - name: Build
+        id: run-build
+        run: npm run build
+
       - name: Prettier check
         id: prettier-check
         run: npm run prettier:check
