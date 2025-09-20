@@ -7,20 +7,22 @@ updates:
     interval: "weekly"
   assignees:
   - "ihs7"
-  reviewers:
-  - "ihs7"
   groups:
     standard-actions:
       patterns:
         - "actions/*"
+    version-check:
+      patterns:
+        - "EndBug/version-check"
+    ihs7-actions:
+      patterns:
+        - "ihs7/*"
 
 - package-ecosystem: "npm"
   directory: "/"
   schedule:
     interval: "weekly"
   assignees:
-  - "ihs7"
-  reviewers:
   - "ihs7"
   groups:
     eslint:

@@ -2,60 +2,42 @@
 
 ## Project Overview
 
-This is a TypeScript library implementing the Elo rating system for competitive games. It supports three core match types: head-to-head duels, free-for-all multiplayer matches, and team-based matches with two calculation strategies.
+A TypeScript library implementing the Elo rating system for competitive games. The library provides a functional API with four main calculation functions supporting head-to-head duels, free-for-all matches, team matches, and multi-team tournaments.
 
-## Core Architecture
+## API Structure
 
-### Match Types & Calculation Flow
+### Functional Design Philosophy
 
-- **`Duel`**: 1v1 matches using boolean win/loss
-- **`FreeForAll`**: Multi-player matches using numeric scores (higher score = better performance)
-- **`TeamMatch`**: Team-based matches with two calculation strategies:
-  - `AVERAGE_TEAMS`: Teams treated as single entities with average ratings
-  - `WEIGHTED_TEAMS`: Individual player contributions weighted by their rating percentage within the team
+The library provides a clean functional API organized around match scenarios. Each calculation function is pure, stateless, and focused on a specific competitive format. The API scales from simple head-to-head matches to complex multi-team tournaments while maintaining consistent input/output patterns.
 
-All match types internally convert to `Team` objects and use `EloMatchResult` for calculation.
+### Match Type Coverage
 
-### Key Classes & Relationships
+The library handles the full spectrum of competitive scenarios: binary win/loss duels, score-based free-for-all competitions, team-versus-team matches, and multi-team tournaments. Each match type accepts contextually appropriate inputs while following the same underlying Elo mathematical principles.
 
-- `Player`: Basic entity with identifier and rating, provides `expectedScoreAgainst()` calculations
-- `Team`: Container for players with scoring, calculates average/total ratings and player weights
-- `EloMatchResult`: Core calculation engine that processes team-vs-team comparisons
-- All rating updates preserve total Elo points (zero-sum system)
+### Team Strategy Flexibility
+
+Team-based calculations offer two approaches: averaging team member ratings for uniform distribution, or weighting individual contributions based on relative skill levels within the team. This flexibility accommodates different competitive philosophies and fairness requirements.
+
+### Mathematical Integrity
+
+All calculations preserve the zero-sum property fundamental to Elo systems. The library ensures mathematical correctness through consistent rounding, proper expected score calculations, and invariant validation across all match scenarios.
 
 ## Development Patterns
 
-### Constructor Options Pattern
+### Functional API Design
 
-```typescript
-interface Options {
-  kFactor?: number; // Default: 15
-  calculationStrategy?: CalculationStrategy; // Default: AVERAGE_TEAMS
-}
-```
+All functions are pure with no side effects, accepting parameters and returning new rating calculations.
 
-All match classes accept optional `Options` parameter for customization.
+### Options Pattern
 
-### Fluent Interface Design
-
-Match setup uses method chaining:
-
-```typescript
-const match = new TeamMatch()
-  .addTeam("team1", 1)
-  .addPlayer(new Player("p1", 1200));
-```
-
-### Guard Methods Convention
-
-Classes use `guardDuplicate()` and similar methods to validate state before operations.
+Functions accept optional configuration with kFactor (default: 15) and strategy (default: AVERAGE_TEAMS).
 
 ### Self-Explanatory Code Style
 
 The codebase prioritizes clear, descriptive naming and structure over code comments:
 
-- Method names like `expectedScoreAgainst()`, `averageRating()`, `getPlayerWeight()` clearly indicate purpose
-- Variable names are explicit: `eloPointsBefore`, `playerWeight`, `versusRating`
+- Method names should clearly indicate purpose
+- Use explicit variable names
 - Complex logic is broken into well-named private methods rather than commented blocks
 - Avoid adding code comments unless documenting non-obvious mathematical formulas or business rules
 
@@ -66,35 +48,32 @@ The codebase prioritizes clear, descriptive naming and structure over code comme
 Tests cover both calculation strategies extensively, including edge cases like:
 
 - Identical ratings
-- Extreme rating differences (38 vs 768)
+- Extreme rating differences
 - Single-player teams
 - Rounding precision
 
 ### Zero-Sum Validation
 
-Critical invariant tests ensure total Elo points remain constant:
-
-```typescript
-// Pattern used in multiple tests
-expect(eloPointsBefore).toBe(eloPointsAfter);
-```
+Critical invariant tests ensure total Elo points remain constant across all rating changes.
 
 ## Build & Development Workflow
 
 ### Commands
 
 - `npm run build`: TypeScript compilation to `dist/`
-- `npm test`: Jest test suite
+- `npm test`: Jest test suite with ts-jest
 - `npm run test:watch`: Watch mode for TDD
 - `npm run lint`: ESLint with TypeScript strict rules
 - `npm run prettier`: Code formatting
+- `npm run prettier:check`: Format validation
 
 ### Code Quality Setup
 
-- ESLint with `typescript-eslint` strict + stylistic configs
+- ESLint with `typescript-eslint` strict configurations
 - Prettier integration via `eslint-config-prettier`
-- Tests excluded from linting but included in TypeScript compilation
-- CommonJS module system with ES6 target
+- Jest with `ts-jest` preset for TypeScript testing
+- CommonJS module system targeting ES6
+- Dist folder excluded from version control and testing
 
 ## Mathematical Implementation Notes
 
@@ -110,10 +89,23 @@ Player weight = `player_rating / team_total_rating` with micro-adjustments for r
 
 Final changes rounded using `Math.sign(eloDiff) * Math.round(Math.abs(eloDiff))` to preserve directionality.
 
-## When Contributing
+## Development Guidelines
 
-- All rating calculations must maintain zero-sum property
-- Add corresponding tests for new calculation strategies
-- Follow the established guard method pattern for validation
-- Ensure TypeScript strict mode compliance
-- Update README examples for new public APIs
+### Mathematical Correctness
+
+- All rating calculations must maintain zero-sum property (total Elo unchanged)
+- Test edge cases: identical ratings, extreme differences, single players
+- Validate rounding behavior preserves mathematical integrity
+
+### Code Standards
+
+- Maintain functional programming approach with pure functions
+- Use explicit, self-documenting naming over comments
+- Follow TypeScript strict mode requirements
+- Add comprehensive test coverage for new features
+
+### API Changes
+
+- Update README examples for any new public functions
+- Maintain backward compatibility or provide migration guide
+- Export new types and enums from main index file
