@@ -40,7 +40,14 @@ jobs:
         id: run-tests
         run: npm run test
 
+      - name: Version check
+        id: version-check
+        uses: EndBug/version-check@36ff30f37c7deabe56a30caa043d127be658c425 # v2.1.5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Validate package publish
+        if: steps.version-check.outputs.changed == 'true'
         id: validate-publish
         run: |
           npm run build
