@@ -5,8 +5,6 @@ updates:
   directory: "/"
   schedule:
     interval: "weekly"
-  assignees:
-  - "ihs7"
   groups:
     standard-actions:
       patterns:
@@ -22,8 +20,6 @@ updates:
   directory: "/"
   schedule:
     interval: "weekly"
-  assignees:
-  - "ihs7"
   groups:
     eslint:
       patterns:
